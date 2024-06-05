@@ -1,0 +1,58 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "RunTestForDebug",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "test",
+                "${workspaceFolder}/MixedDebugTest/bin/Debug/net8.0/MixedDebugTest.dll",
+                "--filter",
+                "Name=TestMethod1"
+            ],
+            "options": {
+                "env": {"VSTEST_HOST_DEBUG": "1"}
+            },
+            "group":{
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "isBackground": true,
+            "dependsOn": ["BuildTest"]
+        },
+        {
+            "label": "BuildTest",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceFolder}/MixedDebugTest/MixedDebugTest.csproj"
+            ],
+            "dependsOn": ["CopyNativeLib"]
+        },
+        {
+            "label": "CopyNativeLib",
+            "type": "shell",
+            "command": "cp",
+            "args": [
+                "${workspaceFolder}/example/libexample.so",
+                "${workspaceFolder}/MixedDebugTest/bin/Debug/net8.0/"
+            ],
+            "dependsOn": ["BuildNativeLib"]
+        },
+        {
+            "label": "BuildNativeLib",
+            "type": "shell",
+            "command": "g++ -g -fPIC -shared -o libexample.so example.cpp",
+            "group":{
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/example/"
+            }
+        }
+    ]
+}
